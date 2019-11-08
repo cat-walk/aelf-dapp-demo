@@ -1,0 +1,14 @@
+.full-page-container {
+  height: 100vh;
+}
+
+.center-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tip-color {
+  color: #333;
+}
