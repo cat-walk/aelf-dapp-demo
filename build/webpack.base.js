@@ -32,7 +32,8 @@ const baseConfig = {
       '@routes': path.resolve(__dirname, '../src', 'routes'),
       '@utils': path.resolve(__dirname, '../src', 'utils'),
       '@redux': path.resolve(__dirname, '../src', 'redux'),
-      '@api': path.resolve(__dirname, '../src', 'api')
+      '@api': path.resolve(__dirname, '../src', 'api'),
+      '@style': path.resolve(__dirname, '../src', 'style')
     },
     extensions: ['.jsx', '.js']
   },

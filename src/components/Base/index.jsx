@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-07 17:20:46
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 17:25:28
+ * @LastEditTime: 2019-11-08 17:40:10
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -21,13 +21,13 @@ export class Base extends Component {
   componentDidMount() {
     const { setBridge } = this.props;
 
-    // const bridge = new AElfBridge({
-    //   proxyType: 'SOCKET.IO',
-    //   socketUrl: 'http://localhost:35443'
-    // });
     const bridge = new AElfBridge({
-      timeout: 1000000 // ms, 毫秒
+      proxyType: 'SOCKET.IO',
+      socketUrl: 'http://localhost:35443'
     });
+    // const bridge = new AElfBridge({
+    //   timeout: 1000000 // ms, 毫秒
+    // });
 
     this.connectBridgeAndGetContractAdds(bridge);
     setBridge(bridge);
