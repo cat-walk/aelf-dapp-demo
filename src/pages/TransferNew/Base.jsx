@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-07 17:20:46
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 15:49:13
+ * @LastEditTime: 2019-11-08 17:25:28
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -18,30 +18,39 @@ import { setBridge } from '../../redux/actions/common';
 import SelectProxyType from '@components/SelectProxyType';
 
 export class Base extends Component {
-  componentDidUpdate(prevProps) {
-    const { bridge } = this.props;
+  componentDidMount() {
+    const { setBridge } = this.props;
 
-    if (prevProps.bridge !== bridge) {
-      bridge
-        .connect()
-        .then(res => {
-          console.log(res);
-          if (res === false) {
-            toast.fail('Connect failed.');
-            return;
-          }
-          return bridge.account();
-        })
-        .then(res => {
-          const { chains } = res.data;
-          // localStorage.setItem('chains', JSON.stringify(chains));
-          const chainAdds = chains.map(item => item.url);
-          fetchContractAdds(chainAdds);
-        });
-    }
+    // const bridge = new AElfBridge({
+    //   proxyType: 'SOCKET.IO',
+    //   socketUrl: 'http://localhost:35443'
+    // });
+    const bridge = new AElfBridge({
+      timeout: 1000000 // ms, 毫秒
+    });
+
+    this.connectBridgeAndGetContractAdds(bridge);
+    setBridge(bridge);
   }
 
-  selectProxyType() {}
+  connectBridgeAndGetContractAdds(bridge) {
+    bridge
+      .connect()
+      .then(res => {
+        console.log(res);
+        if (res === false) {
+          toast.fail('Connect failed.');
+          return;
+        }
+        return bridge.account();
+      })
+      .then(res => {
+        const { chains } = res.data;
+        // localStorage.setItem('chains', JSON.stringify(chains));
+        const chainAdds = chains.map(item => item.url);
+        fetchContractAdds(chainAdds);
+      });
+  }
 
   render() {
     const { children, bridge } = this.props;
