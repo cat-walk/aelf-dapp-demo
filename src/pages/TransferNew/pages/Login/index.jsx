@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-10-12 11:48:15
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 21:10:20
+ * @LastEditTime: 2019-11-09 14:42:18
  * @Description: file content
  */
 import React, { PureComponent } from 'react';
@@ -42,6 +42,7 @@ class Login extends PureComponent {
     const { history } = this.props;
     const tokenContract = new TokenContract('kangkang');
 
+    // todo: get the owner address by api
     tokenContract
       .fetchBalance({
         symbol: 'ELF',

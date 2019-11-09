@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-07 16:01:36
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 14:58:43
+ * @LastEditTime: 2019-11-09 15:29:27
  * @Description: file content
  */
 import { getBridge } from '@utils/bridge';
@@ -20,7 +20,8 @@ export default class TokenContract {
     TokenContract.singleton = this;
 
     this.bridge = getBridge();
-    console.log('this.bridge',this.bridge)
+    console.log('this.bridge', this.bridge);
+    // todo: rename the variable refer to tokenConverter
     this.tokenContractAdd = getContractAdd('token');
   }
 
@@ -40,9 +41,7 @@ export default class TokenContract {
     });
   }
 
-  transfer({
-    to, symbol, amount, memo
-  }) {
+  transfer({ to, symbol, amount, memo }) {
     return this.bridge.invoke({
       contractAddress: this.tokenContractAdd, // 合约地址
       contractMethod: 'Transfer', // 合约方法名
