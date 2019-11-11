@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-08 21:10:34
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 20:25:44
+ * @LastEditTime: 2019-11-11 20:40:09
  * @Description: file content
  */
 
@@ -82,6 +82,7 @@ class Login extends PureComponent {
       });
   }
 
+  // todo: disable the login button
   render() {
     const { appName } = this.props;
     const { errors, isModalShow, loading } = this.state;
