@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:19:58
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 17:22:08
+ * @LastEditTime: 2019-11-11 20:38:30
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -236,7 +236,7 @@ export class Vote extends Component {
         <DatePicker
           mode='date'
           title='Select Date'
-          extra='Optional'
+          extra='Select'
           value={lockTime}
           onChange={lockTime => this.setState({ lockTime })}
         >
