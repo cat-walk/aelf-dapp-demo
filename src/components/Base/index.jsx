@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-07 17:20:46
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 17:40:10
+ * @LastEditTime: 2019-11-11 19:10:25
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -34,22 +34,20 @@ export class Base extends Component {
   }
 
   connectBridgeAndGetContractAdds(bridge) {
-    bridge
-      .connect()
-      .then(res => {
-        console.log(res);
-        if (res === false) {
-          toast.fail('Connect failed.');
-          return;
-        }
-        return bridge.account();
-      })
-      .then(res => {
-        const { chains } = res.data;
-        // localStorage.setItem('chains', JSON.stringify(chains));
-        const chainAdds = chains.map(item => item.url);
-        fetchContractAdds(chainAdds);
-      });
+    bridge.connect().then(res => {
+      console.log(res);
+      if (res === false) {
+        toast.fail('Connect failed.');
+        return;
+      }
+      // return bridge.account();
+    });
+    // .then(res => {
+    //   const { chains } = res.data;
+    //   // localStorage.setItem('chains', JSON.stringify(chains));
+    //   const chainAdds = chains.map(item => item.url);
+    //   fetchContractAdds(chainAdds);
+    // });
   }
 
   render() {

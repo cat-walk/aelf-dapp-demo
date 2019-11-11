@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-08 21:10:34
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 14:34:08
+ * @LastEditTime: 2019-11-11 19:12:16
  * @Description: file content
  */
 
@@ -13,8 +13,8 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Toast, Modal } from 'antd-mobile';
 
-// todo: why is the less didn't work?
 import './index.less';
+import { fetchContractAdds } from '@utils/contracts';
 
 const clsPrefix = 'login';
 
@@ -23,10 +23,11 @@ class Login extends PureComponent {
     super(props);
     this.state = {
       isModalShow: false,
-      errors: null
+      errors: null,
+      loading: false
     };
 
-    this.jumpToPersonalCenter = this.jumpToPersonalCenter.bind(this);
+    this.login = this.login.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
   }
 
@@ -36,15 +37,34 @@ class Login extends PureComponent {
     });
   }
 
-  jumpToPersonalCenter() {
-    const { history, route } = this.props;
+  async login() {
+    const { history, route, bridge } = this.props;
 
-    history.push(route);
+    this.setState({
+      loading: true
+    });
+    const res = await bridge.account();
+    const { chains } = res.data;
+    // localStorage.setItem('chains', JSON.stringify(chains));
+    const chainAdds = chains.map(item => item.url);
+    fetchContractAdds(chainAdds)
+      .then(() => {
+        history.push(route);
+        this.setState({
+          loading: false
+        });
+      })
+      .catch(err => {
+        console.error('fetchContractAdds', err);
+        this.setState({
+          loading: false
+        });
+      });
   }
 
   render() {
     const { appName } = this.props;
-    const { errors, isModalShow } = this.state;
+    const { errors, isModalShow, loading } = this.state;
 
     return (
       <section
@@ -55,7 +75,8 @@ class Login extends PureComponent {
           <Button
             type='primary'
             style={{ borderRadius: 20 }}
-            onClick={this.jumpToPersonalCenter}
+            onClick={this.login}
+            loading={loading}
           >
             Login
           </Button>
