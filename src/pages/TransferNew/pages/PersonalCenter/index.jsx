@@ -3,11 +3,13 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-10-14 16:45:14
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 15:10:23
+ * @LastEditTime: 2019-11-11 20:06:31
  * @Description: file content
  */
 import React, { PureComponent } from 'react';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { Button, Toast, Modal } from 'antd-mobile';
 
 // todo: why is the less didn't work?
@@ -20,22 +22,10 @@ const clsPrefix = 'personal-center';
 class PersonalCenter extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      accountName: null,
-      balance: null
-    };
 
     this.jumpToTransfer = this.jumpToTransfer.bind(this);
-  }
-
-  componentDidMount() {
-    const { accountName, balance } = JSON.parse(this.props.match.params.data);
-    this.setState({
-      accountName,
-      balance
-    });
-
-    console.log({ accountName, balance, hello: 'elf' });
+    // todo: Use the common address, maybe using extends?
+    this.address = localStorage.getItem('address');
   }
 
   jumpToTransfer() {
@@ -45,7 +35,7 @@ class PersonalCenter extends PureComponent {
   }
 
   render() {
-    const { accountName, balance } = this.state;
+    const { balance } = this.props;
 
     return (
       <section
@@ -53,7 +43,7 @@ class PersonalCenter extends PureComponent {
       >
         <div className='account-name-container'>
           <span className='account-name'>
-            {accountName && centerEllipsis(accountName)}
+            {this.address && centerEllipsis(this.address)}
           </span>
         </div>
         <div className='account-balance-container'>
@@ -73,4 +63,25 @@ class PersonalCenter extends PureComponent {
   }
 }
 
-export default withRouter(PersonalCenter);
+const mapStateToProps = state => ({
+  ...state.common
+});
+
+// todo: Snippet
+// const mapDispatchToProps = dispatch =>
+//   bindActionCreators(
+//     {
+//       setBalance
+//     },
+//     dispatch
+//   );
+
+const wrapper = compose(
+  withRouter,
+  connect(
+    mapStateToProps
+    // mapDispatchToProps
+  )
+);
+
+export default wrapper(PersonalCenter);

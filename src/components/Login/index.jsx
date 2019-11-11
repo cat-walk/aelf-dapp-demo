@@ -3,18 +3,21 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-08 21:10:34
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 19:12:16
+ * @LastEditTime: 2019-11-11 20:25:44
  * @Description: file content
  */
 
 import React, { PureComponent } from 'react';
 import { withRouter } from 'react-router-dom';
-import { compose } from 'redux';
+import { compose, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Toast, Modal } from 'antd-mobile';
 
 import './index.less';
 import { fetchContractAdds } from '@utils/contracts';
+import TokenContract from '@api/token';
+import { setBalance } from '@redux/actions/common';
+import { SYMBOL, TOKEN_DECIMAL } from '@constants';
 
 const clsPrefix = 'login';
 
@@ -38,21 +41,38 @@ class Login extends PureComponent {
   }
 
   async login() {
-    const { history, route, bridge } = this.props;
+    const { history, route, bridge, setBalance } = this.props;
 
     this.setState({
       loading: true
     });
     const res = await bridge.account();
-    const { chains } = res.data;
+    const { chains, accounts } = res.data;
+    const { address, pubkey } = accounts[0];
+    localStorage.setItem('address', address);
+    localStorage.setItem('pubkey', pubkey);
     // localStorage.setItem('chains', JSON.stringify(chains));
     const chainAdds = chains.map(item => item.url);
     fetchContractAdds(chainAdds)
+      .then(async () => {
+        const tokenContract = new TokenContract();
+
+        const res = await tokenContract.fetchBalance({
+          symbol: SYMBOL,
+          owner: address
+        });
+
+        console.log({
+          res
+        });
+
+        setBalance(res.data.balance / TOKEN_DECIMAL);
+      })
       .then(() => {
-        history.push(route);
         this.setState({
           loading: false
         });
+        history.push(route);
       })
       .catch(err => {
         console.error('fetchContractAdds', err);
@@ -71,7 +91,7 @@ class Login extends PureComponent {
         className={`${clsPrefix}-container full-page-container center-container`}
       >
         <h1 className='dapp-name'>AElf {appName} Demo</h1>
-        <div style={{ display: 'block', width: '100%', padding: '0 10%' }}>
+        <div style={{ display: 'block', width: '80%' }}>
           <Button
             type='primary'
             style={{ borderRadius: 20 }}
@@ -114,9 +134,21 @@ const mapStateToProps = state => ({
   ...state.common
 });
 
+// todo: Snippet
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      setBalance
+    },
+    dispatch
+  );
+
 const wrapper = compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 );
 
 export default wrapper(Login);

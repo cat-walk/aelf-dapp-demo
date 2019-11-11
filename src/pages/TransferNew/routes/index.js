@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
-import Login from '../pages/Login/index';
+import Login from '@components/Login';
 import PersonalCenter from '../pages/PersonalCenter';
 import Transfer from '../pages/Transfer';
 import TransferResult from '../pages/TransferResult';
@@ -10,8 +10,10 @@ import TransferResult from '../pages/TransferResult';
 export default (
   <Switch>
     <Redirect from='/' to='/login' exact />
-    <Route path='/login' component={Login} />
-    <Route path='/personal-center/:data' component={PersonalCenter} />
+    <Route path='/login'>
+      <Login appName='Transfer' route='/personal-center' />
+    </Route>
+    <Route path='/personal-center' component={PersonalCenter} />
     <Route path='/transfer' component={Transfer} />
     <Route path='/transfer-result/:txId' component={TransferResult} />
     {/* <Route path='*' component={NoMatch} /> */}

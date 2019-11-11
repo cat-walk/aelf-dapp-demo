@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 11:56:29
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 18:07:14
+ * @LastEditTime: 2019-11-11 20:26:42
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -77,7 +77,6 @@ export class VoteCenter extends Component {
     super(props);
     this.state = {
       modalVisible: false,
-      address: null,
       balance: '-',
       totalVoteAmount: '-',
       totalRedeemAmount: '-',
@@ -87,30 +86,17 @@ export class VoteCenter extends Component {
         txId: '-',
         blockHeight: '-'
       },
-      pubkey: '-',
       nodesData: []
     };
 
     this.onVoteClick = this.onVoteClick.bind(this);
     this.onRedeemClick = this.onRedeemClick.bind(this);
+
+    this.address = localStorage.getItem('address');
+    this.pubkey = localStorage.getItem('pubkey');
   }
 
   async componentDidMount() {
-    const { bridge } = this.props;
-
-    await bridge.connect();
-
-    const res = await bridge.account();
-    console.log({
-      res
-    });
-    // todo: Use a block to block the response from bridge
-    const { address, pubkey } = res.data.accounts[0];
-    this.setState({
-      address,
-      pubkey
-    });
-
     await this.getBalance();
 
     await this.fetchUserVoteRecords();
@@ -132,14 +118,13 @@ export class VoteCenter extends Component {
 
   async fetchUserVoteRecords() {
     const { setUserVotes } = this.props;
-    const { pubkey } = this.state;
     this.electionContract = new ElectionContract();
     console.log({
       setUserVotes
     });
     try {
       const res = await this.electionContract.getElectorVoteWithAllRecords({
-        value: pubkey
+        value: this.pubkey
       });
 
       setUserVotes({
@@ -320,7 +305,7 @@ export class VoteCenter extends Component {
 
     const res = await tokenContract.fetchBalance({
       symbol: 'ELF',
-      owner: address
+      owner: this.address
     });
     console.log({
       res
@@ -334,7 +319,6 @@ export class VoteCenter extends Component {
   render() {
     const { getFieldProps } = this.props.form;
     const {
-      address,
       modalVisible,
       balance,
       totalRedeemAmount,
@@ -348,7 +332,7 @@ export class VoteCenter extends Component {
       <div className='resource-market'>
         <div className='resource-wallet card-container'>
           <div className='wallet-title'>
-            {address && centerEllipsis(address)}
+            {this.address && centerEllipsis(this.address)}
           </div>
           <div className='wallet-balance'>balance: {formatToken(balance)}</div>
           <ul className='resource-item-group'>

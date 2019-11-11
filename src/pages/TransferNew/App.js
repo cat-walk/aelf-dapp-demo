@@ -8,6 +8,7 @@ import store from '../../redux/store';
 import Base from '@components/Base';
 import './App.css';
 import '@style/common.less';
+import 'minireset.css';
 
 function App() {
   return (
