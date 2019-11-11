@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-08 21:10:34
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 21:25:23
+ * @LastEditTime: 2019-11-11 14:34:08
  * @Description: file content
  */
 
@@ -51,8 +51,12 @@ class Login extends PureComponent {
         className={`${clsPrefix}-container full-page-container center-container`}
       >
         <h1 className='dapp-name'>AElf {appName} Demo</h1>
-        <div>
-          <Button type='primary' inline onClick={this.jumpToPersonalCenter}>
+        <div style={{ display: 'block', width: '100%', padding: '0 10%' }}>
+          <Button
+            type='primary'
+            style={{ borderRadius: 20 }}
+            onClick={this.jumpToPersonalCenter}
+          >
             Login
           </Button>
         </div>

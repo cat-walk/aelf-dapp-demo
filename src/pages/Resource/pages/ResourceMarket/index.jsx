@@ -3,14 +3,23 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 11:56:29
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 16:07:04
+ * @LastEditTime: 2019-11-11 16:11:55
  * @Description: file content
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { InputItem, Button, Toast, Modal, List } from 'antd-mobile';
+import {
+  InputItem,
+  Button,
+  Toast,
+  Modal,
+  List,
+  ActivityIndicator // todo: Add Modal
+} from 'antd-mobile';
 import { createForm } from 'rc-form';
+import Select from 'react-select';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import './index.less';
 import TokenContract from '@api/token';
@@ -34,6 +43,7 @@ if (isIPhone) {
 }
 
 function getFormItems() {
+  const { copied } = this.state;
   const { amount, txId, elf, blockHeight } = this.state.txResult;
 
   const formItems = [
@@ -52,9 +62,20 @@ function getFormItems() {
     //   value: elf,
     //   isCopyable: true
     // },
+    // todo: Extract as a single component
     {
       title: 'tx id',
-      value: txId,
+      value: (
+        <CopyToClipboard
+          text={txId}
+          onCopy={() => this.setState({ copied: true })}
+        >
+          <span>
+            {txId.slice(0, 10)}...
+            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
+          </span>
+        </CopyToClipboard>
+      ),
       isCopyable: true
     },
     {
@@ -74,8 +95,14 @@ export class ResourceMarket extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: true,
       modalVisible: false,
       address: null,
+      copied: false,
+      type: {
+        value: 'RAM',
+        label: 'RAM'
+      },
       resourceWallet: {
         elf: {
           symbol: 'ELF',
@@ -169,6 +196,10 @@ export class ResourceMarket extends Component {
           console.log({
             res
           });
+          this.setState({
+            loading: false
+          });
+          this.getAllBalances();
           if (res.code !== 0) {
             this.setState({
               errors: res.error,
@@ -206,11 +237,15 @@ export class ResourceMarket extends Component {
 
           console.log("I'm success");
         })
-        .catch(err =>
+        .catch(err => {
+          this.getAllBalances();
+          this.setState({
+            loading: false
+          });
           console.log({
             err
-          })
-        );
+          });
+        });
     }, 4000);
   }
 
@@ -223,9 +258,10 @@ export class ResourceMarket extends Component {
 
   async buyResource(buyNum) {
     const tokenConverterContract = new TokenConverterContract();
+    const { type } = this.state;
 
     const res = await tokenConverterContract.buy({
-      symbol: 'CPU',
+      symbol: type.value,
       amount: buyNum * TOKEN_DECIMAL
     });
     await this.fetchTxResult(res.data.TransactionId);
@@ -243,9 +279,10 @@ export class ResourceMarket extends Component {
 
   async sellResource(sellNum) {
     const tokenConverterContract = new TokenConverterContract();
+    const { type } = this.state;
 
     const res = await tokenConverterContract.sell({
-      symbol: 'CPU',
+      symbol: type.value,
       amount: sellNum * TOKEN_DECIMAL
     });
 
@@ -256,7 +293,7 @@ export class ResourceMarket extends Component {
   }
 
   async getAllBalances() {
-    const { resourceWallet } = this.state;
+    const { resourceWallet, address } = this.state;
 
     const allTokens = [resourceWallet.elf, ...resourceWallet.resources];
     const tokenContract = new TokenContract();
@@ -266,7 +303,7 @@ export class ResourceMarket extends Component {
         allTokens.map(item => {
           return tokenContract.fetchBalance({
             symbol: item.symbol,
-            owner: '2hxkDg6Pd2d4yU1A16PTZVMMrEDYEPR8oQojMDwWdax5LsBaxX'
+            owner: address
           });
         })
       );
@@ -291,11 +328,21 @@ export class ResourceMarket extends Component {
     }
   }
 
+  handleChange = type => {
+    this.setState({ type });
+    console.log(`Option selected:`, type);
+  };
+
   render() {
     const { getFieldProps } = this.props.form;
-    const { resourceWallet, address, modalVisible } = this.state;
+    const { resourceWallet, address, modalVisible, type, loading } = this.state;
 
     const formItems = getFormItems.call(this);
+
+    const options = resourceWallet.resources.map(item => ({
+      value: item.symbol,
+      label: item.symbol
+    }));
 
     return (
       <div className='resource-market'>
@@ -304,7 +351,7 @@ export class ResourceMarket extends Component {
             {address && centerEllipsis(address)}
           </div>
           <div className='wallet-balance'>
-            balance: {formatToken(resourceWallet.elf.balance)}
+            Balance: {formatToken(resourceWallet.elf.balance)}
           </div>
           <ul className='resource-item-group'>
             {resourceWallet.resources.map(item => (
@@ -314,9 +361,16 @@ export class ResourceMarket extends Component {
             ))}
           </ul>
         </div>
-        <div className='resource-trading'>
+        <h1 className='card-title page-wrapper'>Resource Center</h1>
+        <div className='resource-trading card-container'>
+          <Select
+            value={type}
+            onChange={this.handleChange}
+            options={options}
+            className='type-select'
+          />
           <div className='resource-buy'>
-            <div className='trading-box-header'>Buy</div>
+            <div className='trading-box-header buy-header'>Buy</div>
             <InputItem
               {...getFieldProps('buyNum', {
                 normalize: (v, prev) => {
@@ -330,7 +384,7 @@ export class ResourceMarket extends Component {
                 }
               })}
               symbol={'money'}
-              placeholder='money format'
+              placeholder='input number'
               ref={el => (this.inputRef = el)}
               onVirtualKeyboardConfirm={v =>
                 console.log('onVirtualKeyboardConfirm:', v)
@@ -338,14 +392,18 @@ export class ResourceMarket extends Component {
               clear
               moneyKeyboardWrapProps={moneyKeyboardWrapProps}
             >
-              数字键盘
+              Buy Num
             </InputItem>
-            <Button symbol='primary' onClick={this.onResourceBuy}>
+            <Button
+              className='trading-btn buy-btn'
+              size='small'
+              onClick={this.onResourceBuy}
+            >
               Buy
             </Button>
           </div>
           <div className='resource-sell'>
-            <div className='trading-box-header'>Sell</div>
+            <div className='trading-box-header sell-header'>Sell</div>
             <InputItem
               {...getFieldProps('sellNum', {
                 normalize: (v, prev) => {
@@ -359,7 +417,7 @@ export class ResourceMarket extends Component {
                 }
               })}
               symbol={'money'}
-              placeholder='money format'
+              placeholder='input number'
               ref={el => (this.inputRef = el)}
               onVirtualKeyboardConfirm={v =>
                 console.log('onVirtualKeyboardConfirm:', v)
@@ -367,9 +425,13 @@ export class ResourceMarket extends Component {
               clear
               moneyKeyboardWrapProps={moneyKeyboardWrapProps}
             >
-              数字键盘
+              Sell Num
             </InputItem>
-            <Button symbol='primary' onClick={this.onResourceSell}>
+            <Button
+              className='trading-btn sell-btn'
+              size='small'
+              onClick={this.onResourceSell}
+            >
               Sell
             </Button>
           </div>
@@ -379,18 +441,27 @@ export class ResourceMarket extends Component {
           maskClosable={false}
           onClose={() => {
             this.setState({
-              modalVisible: false
+              modalVisible: false,
+              copied: false,
+              loading: true
             });
           }}
           closable
-          title='result'
+          title='Result'
           transparent
         >
-          {formItems.map(item => (
-            <Item extra={item.value} key={item.title}>
-              {item.title}:
-            </Item>
-          ))}
+          {loading ? (
+            <ActivityIndicator animating={loading} />
+          ) : (
+            <ul>
+              {formItems.map(item => (
+                <li key={item.title}>
+                  <span className='item-label'>{item.title}: </span>
+                  <span className='item-value'>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Modal>
       </div>
     );

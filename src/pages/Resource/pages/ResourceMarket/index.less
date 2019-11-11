@@ -3,14 +3,29 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 14:03:50
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 15:22:56
+ * @LastEditTime: 2019-11-11 16:06:33
  * @Description: file content
  */
+// todo: Make it work globally
+@buyColor: #07ac8f;
+@sellColor: #d44a63;
+
+.common-padding {
+  padding: 5px;
+}
+.split-border {
+  border-bottom: 1px solid #ccc;
+}
+
 .resource-market {
   .resource-wallet {
     margin-top: 20px;
     .wallet-title {
-      border-bottom: 1px solid #ccc;
+      .common-padding;
+      .split-border;
+    }
+    .wallet-balance {
+      .common-padding;
     }
   }
   .resource-item-group {
@@ -19,6 +34,41 @@
     justify-content: space-around;
     .resource-item {
       width: 50%;
+      .common-padding;
     }
+  }
+  .type-select {
+    display: inline-block;
+    min-width: 100px;
+    margin-bottom: 20px;
+    > div {
+      border: none;
+    }
+  }
+  .card-title {
+    color: #6a73ff;
+    font-size: 18px;
+    .common-padding;
+  }
+  .resource-buy,
+  .resource-sell {
+    .common-padding;
+    margin-bottom: 20px;
+  }
+  .trading-box-header {
+    .split-border;
+    &.buy-header {
+      color: @buyColor;
+    }
+    &.sell-header {
+      color: @sellColor;
+    }
+  }
+}
+
+.am-modal {
+  width: 300px;
+  .am-activity-indicator-spinner {
+    margin: 0 auto;
   }
 }
