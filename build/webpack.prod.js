@@ -12,14 +12,15 @@ const baseConfig = require('./webpack.base');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const {OUTPUT_PATH} = require('./util');
-const nodeModule = (...segments) => path.join(__dirname, '../', 'node_modules', ...segments);
+const { OUTPUT_PATH } = require('./util');
+const nodeModule = (...segments) =>
+  path.join(__dirname, '../', 'node_modules', ...segments);
 
 const prodConfig = {
   mode: 'production',
   resolve: {
     alias: {
-      'react': nodeModule('react', 'umd', 'react.production.min.js'),
+      react: nodeModule('react', 'umd', 'react.production.min.js'),
       'react-dom': nodeModule('react-dom', 'umd', 'react-dom.production.min.js')
     }
   },
@@ -56,8 +57,8 @@ const prodConfig = {
           warnings: false,
           parse: {},
           compress: {
-            drop_debugger: true,
-            drop_console: true
+            drop_debugger: true
+            // drop_console: true
           },
           mangle: true, // Note `mangle.properties` is `false` by default.
           module: false,
@@ -67,7 +68,7 @@ const prodConfig = {
           ie8: false,
           keep_classnames: undefined,
           keep_fnames: false,
-          safari10: false,
+          safari10: false
         }
       }),
       new OptimizeCSSAssetsPlugin({
@@ -94,6 +95,5 @@ const prodConfig = {
     }
   }
 };
-
 
 module.exports = merge(baseConfig, prodConfig);
