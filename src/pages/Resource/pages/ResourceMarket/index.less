@@ -3,13 +3,14 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 14:03:50
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 16:06:33
+ * @LastEditTime: 2019-11-11 17:13:50
  * @Description: file content
  */
 // todo: Make it work globally
 @buyColor: #07ac8f;
 @sellColor: #d44a63;
 
+// todo: repeating code
 .common-padding {
   padding: 5px;
 }
@@ -45,11 +46,6 @@
       border: none;
     }
   }
-  .card-title {
-    color: #6a73ff;
-    font-size: 18px;
-    .common-padding;
-  }
   .resource-buy,
   .resource-sell {
     .common-padding;
@@ -63,12 +59,5 @@
     &.sell-header {
       color: @sellColor;
     }
-  }
-}
-
-.am-modal {
-  width: 300px;
-  .am-activity-indicator-spinner {
-    margin: 0 auto;
   }
 }

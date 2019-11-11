@@ -3,23 +3,32 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:19:58
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 20:05:57
+ * @LastEditTime: 2019-11-11 17:22:08
  * @Description: file content
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { InputItem, List, Button, DatePicker, Modal } from 'antd-mobile';
+import {
+  InputItem,
+  List,
+  Button,
+  DatePicker,
+  Modal,
+  ActivityIndicator
+} from 'antd-mobile';
 import { createForm } from 'rc-form';
 import moment from 'moment';
-
-const LABEL_NUM = 6;
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import './index.less';
 import ElectionContract from '@api/election';
 
+const LABEL_NUM = 6;
+
 function getFormItems() {
+  const { copied } = this.state;
   const { amount, txId, blockHeight, expiredTime } = this.state.txResult;
 
   const formItems = [
@@ -30,7 +39,7 @@ function getFormItems() {
     },
     {
       title: 'expired time',
-      value: expiredTime,
+      value: moment(expiredTime).format('YYYY-MM-DD'),
       isCopyable: false
     },
     // {
@@ -40,7 +49,17 @@ function getFormItems() {
     // },
     {
       title: 'tx id',
-      value: txId,
+      value: (
+        <CopyToClipboard
+          text={txId}
+          onCopy={() => this.setState({ copied: true })}
+        >
+          <span>
+            {txId.slice(0, 10)}...
+            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
+          </span>
+        </CopyToClipboard>
+      ),
       isCopyable: true
     },
     {
@@ -57,6 +76,8 @@ export class Vote extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      copied: false,
+      loading: true,
       voteAmount: null,
       lockTime: null,
       txResult: {
@@ -120,6 +141,9 @@ export class Vote extends Component {
           ]
         })
         .then(res => {
+          this.setState({
+            loading: false
+          });
           console.log({
             res
           });
@@ -161,17 +185,20 @@ export class Vote extends Component {
 
           console.log("I'm success");
         })
-        .catch(err =>
+        .catch(err => {
+          this.setState({
+            loading: false
+          });
           console.log({
             err
-          })
-        );
+          });
+        });
     }, 4000);
   }
 
   render() {
     const { getFieldProps } = this.props.form;
-    const { lockTime, modalVisible, voteAmount } = this.state;
+    const { lockTime, modalVisible, voteAmount, loading } = this.state;
 
     const formItems = getFormItems.call(this);
 
@@ -186,13 +213,14 @@ export class Vote extends Component {
           clear
           moneyKeyboardAlign='left'
           value={this.pubkey}
+          editable={false}
         >
           Add
         </InputItem>
         <InputItem
           type='number'
           labelNumber={LABEL_NUM}
-          placeholder='input the reciever pubkey'
+          placeholder='input the amount'
           clear
           onBlur={v => {
             console.log('onBlur', v);
@@ -202,9 +230,9 @@ export class Vote extends Component {
         >
           Vote Amount
         </InputItem>
-        <p className='reciever-pubkey-tip tip-color'>
+        {/* <p className='reciever-pubkey-tip tip-color'>
           (Only support main chain transfer) &nbsp;&nbsp;&nbsp;
-        </p>
+        </p> */}
         <DatePicker
           mode='date'
           title='Select Date'
@@ -212,11 +240,15 @@ export class Vote extends Component {
           value={lockTime}
           onChange={lockTime => this.setState({ lockTime })}
         >
-          <List.Item arrow='horizontal'>Date</List.Item>
+          <List.Item arrow='horizontal'>Expired Time</List.Item>
         </DatePicker>
         {/* </List> */}
-        <div className='transfer-btn-container'>
-          <Button type='primary' onClick={this.onVoteClick}>
+        <div className='btn-container'>
+          <Button
+            className='trading-btn'
+            type='primary'
+            onClick={this.onVoteClick}
+          >
             Vote
           </Button>
         </div>
@@ -226,18 +258,27 @@ export class Vote extends Component {
           maskClosable={false}
           onClose={() => {
             this.setState({
-              modalVisible: false
+              modalVisible: false,
+              copied: false,
+              loading: true
             });
           }}
           closable
-          title='result'
+          title='Result'
           transparent
         >
-          {formItems.map(item => (
-            <List.Item extra={item.value} key={item.title}>
-              {item.title}:
-            </List.Item>
-          ))}
+          {loading ? (
+            <ActivityIndicator animating={loading} />
+          ) : (
+            <ul>
+              {formItems.map(item => (
+                <li key={item.title}>
+                  <span className='item-label'>{item.title}: </span>
+                  <span className='item-value'>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Modal>
       </div>
     );

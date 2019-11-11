@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 11:56:29
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 21:02:29
+ * @LastEditTime: 2019-11-11 18:07:14
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -136,7 +136,7 @@ export class VoteCenter extends Component {
     this.electionContract = new ElectionContract();
     console.log({
       setUserVotes
-    })
+    });
     try {
       const res = await this.electionContract.getElectorVoteWithAllRecords({
         value: pubkey
@@ -320,7 +320,7 @@ export class VoteCenter extends Component {
 
     const res = await tokenContract.fetchBalance({
       symbol: 'ELF',
-      owner: '2hxkDg6Pd2d4yU1A16PTZVMMrEDYEPR8oQojMDwWdax5LsBaxX'
+      owner: address
     });
     console.log({
       res
@@ -360,19 +360,22 @@ export class VoteCenter extends Component {
             )}`}</li>
           </ul>
         </div>
+        <h1 className='card-title page-wrapper'>Nodes List</h1>
         <div className='node-group-container'>
           <ul className='node-group'>
             {nodesData.map(item => {
               return (
                 <li className='node-item card-container'>
                   <div className='node-rank'>{item.rank}</div>
-                  <div className='node-name'>{item.pubkey.slice(0, 20)}</div>
+                  <div className='node-name ellipsis'>{item.pubkey}</div>
                   <div className='node-votes'>
                     votes: {item.obtainedVotesAmount}
                   </div>
                   <div className='btn-group'>
                     <Button
+                      className='round-btn vote-btn'
                       type='primary'
+                      size='small'
                       inline
                       onClick={() => {
                         this.onVoteClick(item.pubkey);
@@ -381,7 +384,9 @@ export class VoteCenter extends Component {
                       Vote
                     </Button>
                     <Button
+                      className='round-btn redeem-btn'
                       type='primary'
+                      size='small'
                       inline
                       onClick={() => {
                         this.onRedeemClick(item.pubkey);

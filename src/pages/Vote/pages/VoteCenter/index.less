@@ -3,14 +3,35 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 14:03:50
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 18:14:54
+ * @LastEditTime: 2019-11-11 16:54:35
  * @Description: file content
  */
+@cusBlue: #6b73ff;
+
+.common-padding {
+  padding: 5px;
+}
+.split-border {
+  border-bottom: 1px solid #ccc;
+}
+
 .resource-market {
+  margin: 20px 0;
   .resource-wallet {
     margin-top: 20px;
     .wallet-title {
-      border-bottom: 1px solid #ccc;
+      .split-border;
+      .common-padding;
+    }
+    .wallet-balance,
+    .resource-item {
+      .common-padding;
+    }
+    .resource-item-group {
+      display: flex;
+      .resource-item {
+        width: 50%;
+      }
     }
   }
   .btn-group {
@@ -19,6 +40,34 @@
     justify-content: space-around;
     > button {
       width: 50%;
+      margin-right: 20px;
+    }
+  }
+  .node-item {
+    .node-rank {
+      display: inline-block;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      background-color: @cusBlue;
+      color: #fff;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .node-name {
+      display: inline-block;
+      width: 300px;
+      vertical-align: middle;
+      .common-padding;
+    }
+    .node-votes {
+      color: @cusBlue;
+      text-align: center;
+    }
+    .vote-btn,
+    .redeem-btn {
+      background-color: @cusBlue;
     }
   }
 }

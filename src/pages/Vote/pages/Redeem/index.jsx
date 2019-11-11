@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:20:03
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-09 21:47:56
+ * @LastEditTime: 2019-11-11 17:57:01
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -16,32 +16,35 @@ import {
   Button,
   DatePicker,
   Modal,
-  Picker
+  Picker,
+  ActivityIndicator
 } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import moment from 'moment';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const LABEL_NUM = 6;
 
-// import './index.less';
+import './index.less';
 import ElectionContract from '@api/election';
 import { computeRedeemableVoteRecords, getFormatedLockTime } from '@utils/time';
 import { publicKeyToAddress } from '@utils/encrypt';
 
 function getFormItems() {
+  const { copied } = this.state;
   const { amount, txId, blockHeight, expiredTime } = this.state.txResult;
 
   const formItems = [
-    {
-      title: 'amount',
-      value: <span className='transfer-amount'>{`${amount}`}</span>,
-      isCopyable: false
-    },
-    {
-      title: 'expired time',
-      value: expiredTime,
-      isCopyable: false
-    },
+    // {
+    //   title: 'amount',
+    //   value: <span className='transfer-amount'>{`${amount}`}</span>,
+    //   isCopyable: false
+    // },
+    // {
+    //   title: 'expired time',
+    //   value: expiredTime,
+    //   isCopyable: false
+    // },
     // {
     //   title: 'node add',
     //   value: ,
@@ -49,7 +52,17 @@ function getFormItems() {
     // },
     {
       title: 'tx id',
-      value: txId,
+      value: (
+        <CopyToClipboard
+          text={txId}
+          onCopy={() => this.setState({ copied: true })}
+        >
+          <span>
+            {txId.slice(0, 10)}...
+            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
+          </span>
+        </CopyToClipboard>
+      ),
       isCopyable: true
     },
     {
@@ -66,6 +79,10 @@ export class Redeem extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      copied: false,
+      loading: true,
+      activeVotesForOne: null,
+      redeemableVotesForOne: null,
       voteAmount: null,
       lockTime: null,
       txResult: {
@@ -102,6 +119,10 @@ export class Redeem extends Component {
     const activeVoteRecordsForOneCandidate = userVotes.activeVotingRecords.filter(
       item => item.candidate === this.pubkey
     );
+    const activeVotesForOne = activeVoteRecordsForOneCandidate.reduce(
+      (total, item) => total + +item.amount,
+      0
+    );
     const redeemableVoteRecordsForOneCandidate = computeRedeemableVoteRecords(
       activeVoteRecordsForOneCandidate
     );
@@ -109,7 +130,10 @@ export class Redeem extends Component {
       'redeemableVoteRecordsForOneCandidate',
       redeemableVoteRecordsForOneCandidate
     );
-
+    const redeemableVotesForOne = redeemableVoteRecordsForOneCandidate.reduce(
+      (total, item) => total + +item.amount,
+      0
+    );
     redeemableVoteRecordsForOneCandidate.forEach(item => {
       item.formatedLockTime = getFormatedLockTime(item);
       item.formatedVoteTime = moment
@@ -119,14 +143,16 @@ export class Redeem extends Component {
       item.name = publicKeyToAddress(item.candidate);
 
       // For display
-      item.label = item.amount;
+      item.label = `amount: ${item.amount} ${item.formatedVoteTime}`;
       item.value = item.voteId;
     });
 
     // todo: consider to generate redeemableVoteRecordsForOneCandidate in component RedeemModal, it will reduce state's counts
     this.setState({
       activeVoteRecordsForOneCandidate,
-      redeemableVoteRecordsForOneCandidate
+      redeemableVoteRecordsForOneCandidate,
+      activeVotesForOne,
+      redeemableVotesForOne
     });
   }
 
@@ -167,6 +193,9 @@ export class Redeem extends Component {
           ]
         })
         .then(res => {
+          this.setState({
+            loading: false
+          });
           console.log({
             res
           });
@@ -192,11 +221,10 @@ export class Redeem extends Component {
           const { Status: status, TransactionId } = res.data;
           const { RefBlockNumber: blockHeight } = res.data.Transaction;
           const params = JSON.parse(res.data.Transaction.Params);
-          const { amount, candidatePubkey, endTimestamp } = params;
+          const { candidatePubkey, endTimestamp } = params;
 
           this.setState({
             txResult: {
-              amount: +amount,
               // elf: 123,
               txId: TransactionId,
               blockHeight,
@@ -208,11 +236,14 @@ export class Redeem extends Component {
 
           console.log("I'm success");
         })
-        .catch(err =>
+        .catch(err => {
+          this.setState({
+            loading: false
+          });
           console.log({
             err
-          })
-        );
+          });
+        });
     }, 4000);
   }
 
@@ -222,7 +253,10 @@ export class Redeem extends Component {
       lockTime,
       modalVisible,
       voteAmount,
-      redeemableVoteRecordsForOneCandidate
+      redeemableVoteRecordsForOneCandidate,
+      activeVotesForOne,
+      redeemableVotesForOne,
+      loading
     } = this.state;
 
     const formItems = getFormItems.call(this);
@@ -244,18 +278,13 @@ export class Redeem extends Component {
         <InputItem
           type='number'
           labelNumber={LABEL_NUM}
-          placeholder='input the reciever pubkey'
-          clear
-          onBlur={v => {
-            console.log('onBlur', v);
-          }}
-          value={voteAmount}
-          onChange={voteAmount => this.setState({ voteAmount })}
+          value={activeVotesForOne}
+          editable={false}
         >
-          Redeem Amount
+          Total Votes
         </InputItem>
-        <p className='reciever-pubkey-tip tip-color'>
-          (Only support main chain transfer) &nbsp;&nbsp;&nbsp;
+        <p className='item-tip tip-color'>
+          redeemable votes: {redeemableVotesForOne} &nbsp;&nbsp;&nbsp;
         </p>
         <Picker
           data={redeemableVoteRecordsForOneCandidate}
@@ -263,11 +292,15 @@ export class Redeem extends Component {
           {...getFieldProps('voteToRedeem')}
           className='forss'
         >
-          <List.Item arrow='horizontal'>Single</List.Item>
+          <List.Item arrow='horizontal'>Select Vote</List.Item>
         </Picker>
         {/* </List> */}
-        <div className='transfer-btn-container'>
-          <Button type='primary' onClick={this.onRedeemClick}>
+        <div className='btn-container'>
+          <Button
+            className='trading-btn'
+            type='primary'
+            onClick={this.onRedeemClick}
+          >
             Redeem
           </Button>
         </div>
@@ -276,18 +309,27 @@ export class Redeem extends Component {
           maskClosable={false}
           onClose={() => {
             this.setState({
-              modalVisible: false
+              modalVisible: false,
+              loading: true,
+              copied: false
             });
           }}
           closable
-          title='result'
+          title='Result'
           transparent
         >
-          {formItems.map(item => (
-            <List.Item extra={item.value} key={item.title}>
-              {item.title}:
-            </List.Item>
-          ))}
+          {loading ? (
+            <ActivityIndicator animating={loading} />
+          ) : (
+            <ul>
+              {formItems.map(item => (
+                <li key={item.title}>
+                  <span className='item-label'>{item.title}: </span>
+                  <span className='item-value'>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Modal>
       </div>
     );
