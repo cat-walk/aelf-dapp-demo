@@ -1,3 +1,11 @@
+/*
+ * @Author: Alfred Yang
+ * @Github: https://github.com/cat-walk
+ * @Date: 2019-11-20 11:49:33
+ * @LastEditors: Alfred Yang
+ * @LastEditTime: 2019-11-21 14:25:13
+ * @Description: file content
+ */
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -20,7 +28,7 @@ class SelectProxyType extends Component {
       <Modal
         visible
         transparent
-        title='Select Proxy Type'
+        title="Select Proxy Type"
         maskClosable={false}
         footer={[
           {
@@ -36,7 +44,9 @@ class SelectProxyType extends Component {
           {
             text: 'POST MESSAGE',
             onPress: () => {
-              this.setBridgeConfig();
+              this.setBridgeConfig({
+                timeout: 1000000 // ms, 毫秒
+              });
             }
           }
         ]}

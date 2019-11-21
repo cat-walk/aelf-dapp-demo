@@ -3,14 +3,14 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-07 17:20:46
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-20 11:38:31
+ * @LastEditTime: 2019-11-21 14:24:06
  * @Description: file content
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { toast } from 'antd-mobile';
+import { Toast } from 'antd-mobile';
 import AElfBridge from 'aelf-bridge';
 
 import { fetchContractAdds } from '@utils/contracts';
@@ -31,10 +31,13 @@ export class Base extends Component {
     // setBridge(bridge);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     const { bridge } = this.props;
     if (bridge !== prevProps.bridge) {
-      bridge.connect();
+      const res = await bridge.connect();
+      if (res === false) {
+        Toast.fail('Connect ');
+      }
     }
   }
 
@@ -42,7 +45,7 @@ export class Base extends Component {
   //   bridge.connect().then(res => {
   //     console.log(res);
   //     if (res === false) {
-  //       toast.fail('Connect failed.');
+  //       Toast.fail('Connect failed.');
   //       return;
   //     }
   //     // return bridge.account();
