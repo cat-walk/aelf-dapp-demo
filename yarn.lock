@@ -773,10 +773,17 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.4.2", "@babel/runtime@^7.4.4", "@babel/runtime@^7.6.3":
+"@babel/runtime@^7.4.2", "@babel/runtime@^7.4.4":
   version "7.7.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.7.2.tgz#111a78002a5c25fc8e3361bedc9529c696b85a6a"
   integrity sha512-JONRbXbTXc9WQE2mAZd1p0Z3DZ/6vaQIkgYMSTP3KjRCyd7rCZCcfhCyX+YjwcKxcZ82UrxbRD358bpExNgrjw==
+  dependencies:
+    regenerator-runtime "^0.13.2"
+
+"@babel/runtime@^7.6.3":
+  version "7.7.6"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.7.6.tgz#d18c511121aff1b4f2cd1d452f1bac9601dd830f"
+  integrity sha512-BWAJxpNVa0QlE5gZdWjSxXtemZyZ9RmrmVozxt3NUXeZhVIJ5ANyqmMc0JDrivBZyxUuQvFxlvH4OWWOogGfUw==
   dependencies:
     regenerator-runtime "^0.13.2"
 
@@ -1278,21 +1285,22 @@ add-dom-event-listener@^1.1.0:
   dependencies:
     object-assign "4.x"
 
-aelf-bridge@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/aelf-bridge/-/aelf-bridge-0.0.5.tgz#dbabf12cccfe7d38833d02e3e4ee87682c55cf3f"
-  integrity sha512-U1OW5k4CbnAJBk5NZPApR9aWl2ouP0RJLB2SsSDyUvMELCwadIcl+v7UaOpd+1gZ/FoZ5+jhFb8GhTfpFxzyyw==
+aelf-bridge@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/aelf-bridge/-/aelf-bridge-0.0.7.tgz#ad33ff1f49d87e736aa91f05728d18e884270aaf"
+  integrity sha512-UyBXhCo57h6x1JFaO5XXrhMfqIyJEUcgA7vBcnCGEAW9tnVoXeAciqK4hpaNeWL3Dor17myag6QqB7gad9MDmg==
   dependencies:
     "@babel/runtime" "^7.6.3"
     browserify-cipher "^1.0.1"
+    create-hmac "^1.1.7"
     elliptic "^6.5.1"
     socket.io-client "^2.3.0"
     uuid "^3.3.3"
 
-aelf-sdk@3.2.18:
-  version "3.2.18"
-  resolved "https://registry.yarnpkg.com/aelf-sdk/-/aelf-sdk-3.2.18.tgz#aa395054b3465817a9f409cc9259cdf30f581090"
-  integrity sha512-NtISvpRI2fRk9LmXlo6+PjRZnu7p+v3xc38u0Bkf9nZBpbPdLuBqa2k5+1jCKCEYlrvmWEmXUyjnpty6Rgt0Sw==
+aelf-sdk@3.2.23:
+  version "3.2.23"
+  resolved "https://registry.yarnpkg.com/aelf-sdk/-/aelf-sdk-3.2.23.tgz#f4d02fb3ed8b87b91906949440548a8ce4ca1fb6"
+  integrity sha512-DKrmBtxixrmkb2+omd8xeupeciAm4fLvgrtwbUtPzwV89892nOVeR0Gby9FFDNOHSICQCAZViG3AEN+AVe/uKg==
   dependencies:
     "@aelfqueen/protobufjs" "^6.8.9"
     "@babel/runtime" "^7.4.5"
@@ -2674,7 +2682,7 @@ create-hash@^1.1.0, create-hash@^1.1.1, create-hash@^1.1.2, create-hash@^1.2.0:
     ripemd160 "^2.0.1"
     sha.js "^2.4.0"
 
-create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
+create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4, create-hmac@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/create-hmac/-/create-hmac-1.1.7.tgz#69170c78b3ab957147b2b8b04572e47ead2243ff"
   integrity sha512-MJG9liiZ+ogc4TzUwuvbER1JRdgvUFSB5+VR/g5h82fGaIRWMWddtKBHi7/sVhfjQZ6SehlyhvQYrcYkaUIpLg==
@@ -3119,9 +3127,9 @@ depd@~1.1.2:
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
 
 des.js@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/des.js/-/des.js-1.0.0.tgz#c074d2e2aa6a8a9a07dbd61f9a15c2cd83ec8ecc"
-  integrity sha1-wHTS4qpqipoH29YfmhXCzYPsjsw=
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/des.js/-/des.js-1.0.1.tgz#5382142e1bdc53f85d86d53e5f4aa7deb91e0843"
+  integrity sha512-Q0I4pfFrv2VPd34/vfLrFOoRmlYj3OV50i7fskps1jZWK1kApMWWT9G6RRUeYedLcBDIhnSDaUvJMb3AhUlaEA==
   dependencies:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
@@ -3364,9 +3372,9 @@ elliptic@^6.0.0, elliptic@^6.4.1:
     minimalistic-crypto-utils "^1.0.0"
 
 elliptic@^6.5.1:
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.1.tgz#c380f5f909bf1b9b4428d028cd18d3b0efd6b52b"
-  integrity sha512-xvJINNLbTeWQjrl6X+7eQCrIy/YPv5XCpKW6kB5mKvtnGILoLDcySuwomfdzt0BMdLNVnuRNTuzKNHj0bva1Cg==
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.2.tgz#05c5678d7173c049d8ca433552224a495d0e3762"
+  integrity sha512-f4x70okzZbIQl/NSRLkI/+tteV/9WqL98zx+SQ69KbXxmVrmjwsNUPn/gYJJ0sHvEak24cZgHIPegRePAtA/xw==
   dependencies:
     bn.js "^4.4.0"
     brorand "^1.0.1"
