@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 11:56:29
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 16:11:55
+ * @LastEditTime: 2019-12-13 15:41:06
  * @Description: file content
  */
 import React, { Component } from 'react';
@@ -142,7 +142,7 @@ export class ResourceMarket extends Component {
   async componentDidMount() {
     const { bridge } = this.props;
 
-    await bridge.connect();
+    // await bridge.connect();
 
     const res = await bridge.account();
     console.log({
