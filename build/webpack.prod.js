@@ -57,8 +57,8 @@ const prodConfig = {
           warnings: false,
           parse: {},
           compress: {
-            drop_debugger: true
-            // drop_console: true
+            drop_debugger: true,
+            drop_console: false
           },
           mangle: true, // Note `mangle.properties` is `false` by default.
           module: false,

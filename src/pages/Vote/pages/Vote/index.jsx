@@ -3,13 +3,13 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:19:58
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 20:38:30
+ * @LastEditTime: 2019-12-13 16:01:05
  * @Description: file content
  */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import {
   InputItem,
   List,
@@ -17,13 +17,13 @@ import {
   DatePicker,
   Modal,
   ActivityIndicator
-} from 'antd-mobile';
-import { createForm } from 'rc-form';
-import moment from 'moment';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+} from "antd-mobile";
+import { createForm } from "rc-form";
+import moment from "moment";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import './index.less';
-import ElectionContract from '@api/election';
+import "./index.less";
+import ElectionContract from "@api/election";
 
 const LABEL_NUM = 6;
 
@@ -33,13 +33,13 @@ function getFormItems() {
 
   const formItems = [
     {
-      title: 'amount',
-      value: <span className='transfer-amount'>{`${amount}`}</span>,
+      title: "amount",
+      value: <span className="transfer-amount">{`${amount}`}</span>,
       isCopyable: false
     },
     {
-      title: 'expired time',
-      value: moment(expiredTime).format('YYYY-MM-DD'),
+      title: "expired time",
+      value: moment(expiredTime).format("YYYY-MM-DD"),
       isCopyable: false
     },
     // {
@@ -48,7 +48,7 @@ function getFormItems() {
     //   isCopyable: true
     // },
     {
-      title: 'tx id',
+      title: "tx id",
       value: (
         <CopyToClipboard
           text={txId}
@@ -56,14 +56,14 @@ function getFormItems() {
         >
           <span>
             {txId.slice(0, 10)}...
-            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
+            <i className={`iconfont ${copied ? "icon-duigou" : "icon-copy"}`} />
           </span>
         </CopyToClipboard>
       ),
       isCopyable: true
     },
     {
-      title: 'block height',
+      title: "block height",
       value: blockHeight,
       isCopyable: false
     }
@@ -81,10 +81,10 @@ export class Vote extends Component {
       voteAmount: null,
       lockTime: null,
       txResult: {
-        amount: '-',
-        txId: '-',
-        blockHeight: '-',
-        expiredTime: '-'
+        amount: "-",
+        txId: "-",
+        blockHeight: "-",
+        expiredTime: "-"
       },
       modalVisible: false
     };
@@ -113,10 +113,13 @@ export class Vote extends Component {
       }
     };
 
-    const res = await this.electionContract.vote(payload);
-    console.log({
-      vote: res
-    });
+    try {
+      const res = await this.electionContract.vote(payload);
+      console.log("vote", res);
+    } catch (err) {
+      console.log("vote", err);
+    }
+
     this.setState({
       modalVisible: true
     });
@@ -132,10 +135,10 @@ export class Vote extends Component {
       };
       bridge
         .api({
-          apiPath: '/api/blockChain/transactionResult', // api路径
+          apiPath: "/api/blockChain/transactionResult", // api路径
           arguments: [
             {
-              name: 'transactionResult',
+              name: "transactionResult",
               value: txId
             }
           ]
@@ -204,26 +207,26 @@ export class Vote extends Component {
 
     return (
       <div>
-        <h1 className='page-title'>Vote</h1>
+        <h1 className="page-title">Vote</h1>
         {/* <List className='transfer-form'> */}
         <InputItem
-          {...getFieldProps('money3')}
+          {...getFieldProps("money3")}
           labelNumber={LABEL_NUM}
-          placeholder='input the transfer amount'
+          placeholder="input the transfer amount"
           clear
-          moneyKeyboardAlign='left'
+          moneyKeyboardAlign="left"
           value={this.pubkey}
           editable={false}
         >
           Add
         </InputItem>
         <InputItem
-          type='number'
+          type="number"
           labelNumber={LABEL_NUM}
-          placeholder='input the amount'
+          placeholder="input the amount"
           clear
           onBlur={v => {
-            console.log('onBlur', v);
+            console.log("onBlur", v);
           }}
           value={voteAmount}
           onChange={voteAmount => this.setState({ voteAmount })}
@@ -234,19 +237,19 @@ export class Vote extends Component {
           (Only support main chain transfer) &nbsp;&nbsp;&nbsp;
         </p> */}
         <DatePicker
-          mode='date'
-          title='Select Date'
-          extra='Select'
+          mode="date"
+          title="Select Date"
+          extra="Select"
           value={lockTime}
           onChange={lockTime => this.setState({ lockTime })}
         >
-          <List.Item arrow='horizontal'>Expired Time</List.Item>
+          <List.Item arrow="horizontal">Expired Time</List.Item>
         </DatePicker>
         {/* </List> */}
-        <div className='btn-container'>
+        <div className="btn-container">
           <Button
-            className='trading-btn'
-            type='primary'
+            className="trading-btn"
+            type="primary"
             onClick={this.onVoteClick}
           >
             Vote
@@ -264,7 +267,7 @@ export class Vote extends Component {
             });
           }}
           closable
-          title='Result'
+          title="Result"
           transparent
         >
           {loading ? (
@@ -273,8 +276,8 @@ export class Vote extends Component {
             <ul>
               {formItems.map(item => (
                 <li key={item.title}>
-                  <span className='item-label'>{item.title}: </span>
-                  <span className='item-value'>{item.value}</span>
+                  <span className="item-label">{item.title}: </span>
+                  <span className="item-value">{item.value}</span>
                 </li>
               ))}
             </ul>

@@ -3,29 +3,29 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 11:56:29
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 20:26:42
+ * @LastEditTime: 2019-12-13 16:13:11
  * @Description: file content
  */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { compose, bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { InputItem, Button, Toast, Modal, List } from 'antd-mobile';
-import { createForm } from 'rc-form';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { compose, bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { InputItem, Button, Toast, Modal, List } from "antd-mobile";
+import { createForm } from "rc-form";
 
-import './index.less';
-import TokenContract from '@api/token';
-import ElectionContract from '@api/election';
-import { centerEllipsis, formatToken } from '@utils/formatter';
-import { TOKEN_DECIMAL } from '@constants';
-import { setUserVotes } from '@redux/actions/vote';
+import "./index.less";
+import TokenContract from "@api/token";
+import ElectionContract from "@api/election";
+import { centerEllipsis, formatToken } from "@utils/formatter";
+import { TOKEN_DECIMAL } from "@constants";
+import { setUserVotes } from "@redux/actions/vote";
 
 const { Item } = List;
 
 // 通过自定义 moneyKeyboardWrapProps 修复虚拟键盘滚动穿透问题
 // https://github.com/ant-design/ant-design-mobile/issues/307
 // https://github.com/ant-design/ant-design-mobile/issues/163
-const isIPhone = new RegExp('\\biPhone\\b|\\biPod\\b', 'i').test(
+const isIPhone = new RegExp("\\biPhone\\b|\\biPod\\b", "i").test(
   window.navigator.userAgent
 );
 let moneyKeyboardWrapProps;
@@ -40,8 +40,8 @@ function getFormItems() {
 
   const formItems = [
     {
-      title: 'amount',
-      value: <span className='transfer-amount'>{`${amount}`}</span>,
+      title: "amount",
+      value: <span className="transfer-amount">{`${amount}`}</span>,
       isCopyable: false
     },
     // {
@@ -55,12 +55,12 @@ function getFormItems() {
     //   isCopyable: true
     // },
     {
-      title: 'tx id',
+      title: "tx id",
       value: txId,
       isCopyable: true
     },
     {
-      title: 'block height',
+      title: "block height",
       value: blockHeight,
       isCopyable: false
     }
@@ -77,14 +77,14 @@ export class VoteCenter extends Component {
     super(props);
     this.state = {
       modalVisible: false,
-      balance: '-',
-      totalVoteAmount: '-',
-      totalRedeemAmount: '-',
+      balance: "-",
+      totalVoteAmount: "-",
+      totalRedeemAmount: "-",
       txResult: {
-        elf: '-',
-        amount: '-',
-        txId: '-',
-        blockHeight: '-'
+        elf: "-",
+        amount: "-",
+        txId: "-",
+        blockHeight: "-"
       },
       nodesData: []
     };
@@ -92,8 +92,8 @@ export class VoteCenter extends Component {
     this.onVoteClick = this.onVoteClick.bind(this);
     this.onRedeemClick = this.onRedeemClick.bind(this);
 
-    this.address = localStorage.getItem('address');
-    this.pubkey = localStorage.getItem('pubkey');
+    this.address = localStorage.getItem("address");
+    this.pubkey = localStorage.getItem("pubkey");
   }
 
   async componentDidMount() {
@@ -119,57 +119,52 @@ export class VoteCenter extends Component {
   async fetchUserVoteRecords() {
     const { setUserVotes } = this.props;
     this.electionContract = new ElectionContract();
-    console.log({
-      setUserVotes
-    });
+
     try {
       const res = await this.electionContract.getElectorVoteWithAllRecords({
         value: this.pubkey
       });
 
-      setUserVotes({
-        userVotes: res.data
-      });
-
-      const { activeVotedVotesAmount, withdrawnVotesRecords } = res.data;
-
       console.log({
         fetchUserVoteRecords: res
       });
 
+      setUserVotes({
+        userVotes: res.data
+      });
+      const { activeVotedVotesAmount, withdrawnVotesRecords } = res.data;
       const totalRedeemAmount = withdrawnVotesRecords.reduce(
         (total, current) => total + +current.amount,
         0
       );
-
       this.setState({
         totalVoteAmount: activeVotedVotesAmount,
         totalRedeemAmount
       });
     } catch (err) {
-      console.log({
-        err
-      });
+      console.log("fetchUserVoteRecords", err);
     }
   }
 
   async fetchNodesData() {
-    const res = await this.electionContract.getPageableCandidateInformation({
-      start: 0,
-      length: 1000000
-    });
-    console.log({
-      res
-    });
-    const nodesData = res.data.value
-      .sort((a, b) => +b.obtainedVotesAmount - +a.obtainedVotesAmount)
-      .map((item, index) => {
-        item.rank = index + 1;
-        return { ...item, ...item.candidateInformation };
+    try {
+      const res = await this.electionContract.getPageableCandidateInformation({
+        start: 0,
+        length: 1000000
       });
-    this.setState({
-      nodesData
-    });
+      console.log("fetchNodesData", res);
+      const nodesData = res.data.value
+        .sort((a, b) => +b.obtainedVotesAmount - +a.obtainedVotesAmount)
+        .map((item, index) => {
+          item.rank = index + 1;
+          return { ...item, ...item.candidateInformation };
+        });
+      this.setState({
+        nodesData
+      });
+    } catch (err) {
+      console.log("fetchNodesData", err);
+    }
   }
 
   displayModal() {
@@ -187,10 +182,10 @@ export class VoteCenter extends Component {
       };
       bridge
         .api({
-          apiPath: '/api/blockChain/transactionResult', // api路径
+          apiPath: "/api/blockChain/transactionResult", // api路径
           arguments: [
             {
-              name: 'transactionResult',
+              name: "transactionResult",
               value: txId
             }
           ]
@@ -244,47 +239,6 @@ export class VoteCenter extends Component {
     }, 4000);
   }
 
-  onResourceBuy() {
-    const { getFieldProps } = this.props.form;
-
-    const buyNumField = getFieldProps('buyNum');
-    this.buyResource(+buyNumField.value);
-  }
-
-  async buyResource(buyNum) {
-    const tokenConverterContract = new TokenConverterContract();
-
-    const res = await tokenConverterContract.buy({
-      symbol: 'CPU',
-      amount: buyNum * TOKEN_DECIMAL
-    });
-    await this.fetchTxResult(res.data.TransactionId);
-    await this.displayModal();
-
-    console.log({ buyNum, res });
-  }
-
-  onResourceSell() {
-    const { getFieldProps } = this.props.form;
-
-    const sellNumField = getFieldProps('sellNum');
-    this.sellResource(+sellNumField.value);
-  }
-
-  async sellResource(sellNum) {
-    const tokenConverterContract = new TokenConverterContract();
-
-    const res = await tokenConverterContract.sell({
-      symbol: 'CPU',
-      amount: sellNum * TOKEN_DECIMAL
-    });
-
-    await this.fetchTxResult(res.data.TransactionId);
-    await this.displayModal();
-
-    console.log({ sellNum, res });
-  }
-
   onVoteClick(address) {
     const { history } = this.props;
     console.log({
@@ -303,17 +257,19 @@ export class VoteCenter extends Component {
   async getBalance() {
     const tokenContract = new TokenContract();
 
-    const res = await tokenContract.fetchBalance({
-      symbol: 'ELF',
-      owner: this.address
-    });
-    console.log({
-      res
-    });
+    try {
+      const res = await tokenContract.fetchBalance({
+        symbol: "ELF",
+        owner: this.address
+      });
+      console.log("fetchBalance", res);
 
-    this.setState({
-      balance: res.data.balance / TOKEN_DECIMAL
-    });
+      this.setState({
+        balance: res.data.balance / TOKEN_DECIMAL
+      });
+    } catch (err) {
+      console.log("fetchBalance", err);
+    }
   }
 
   render() {
@@ -329,37 +285,37 @@ export class VoteCenter extends Component {
     const formItems = getFormItems.call(this);
 
     return (
-      <div className='resource-market'>
-        <div className='resource-wallet card-container'>
-          <div className='wallet-title'>
+      <div className="resource-market">
+        <div className="resource-wallet card-container">
+          <div className="wallet-title">
             {this.address && centerEllipsis(this.address)}
           </div>
-          <div className='wallet-balance'>balance: {formatToken(balance)}</div>
-          <ul className='resource-item-group'>
-            <li className='resource-item'>{`total votes: ${formatToken(
+          <div className="wallet-balance">balance: {formatToken(balance)}</div>
+          <ul className="resource-item-group">
+            <li className="resource-item">{`total votes: ${formatToken(
               totalVoteAmount.toLocaleString()
             )}`}</li>
-            <li className='resource-item'>{`total redeems: ${formatToken(
+            <li className="resource-item">{`total redeems: ${formatToken(
               totalRedeemAmount.toLocaleString()
             )}`}</li>
           </ul>
         </div>
-        <h1 className='card-title page-wrapper'>Nodes List</h1>
-        <div className='node-group-container'>
-          <ul className='node-group'>
+        <h1 className="card-title page-wrapper">Nodes List</h1>
+        <div className="node-group-container">
+          <ul className="node-group">
             {nodesData.map(item => {
               return (
-                <li className='node-item card-container'>
-                  <div className='node-rank'>{item.rank}</div>
-                  <div className='node-name ellipsis'>{item.pubkey}</div>
-                  <div className='node-votes'>
+                <li className="node-item card-container">
+                  <div className="node-rank">{item.rank}</div>
+                  <div className="node-name ellipsis">{item.pubkey}</div>
+                  <div className="node-votes">
                     votes: {item.obtainedVotesAmount}
                   </div>
-                  <div className='btn-group'>
+                  <div className="btn-group">
                     <Button
-                      className='round-btn vote-btn'
-                      type='primary'
-                      size='small'
+                      className="round-btn vote-btn"
+                      type="primary"
+                      size="small"
                       inline
                       onClick={() => {
                         this.onVoteClick(item.pubkey);
@@ -368,9 +324,9 @@ export class VoteCenter extends Component {
                       Vote
                     </Button>
                     <Button
-                      className='round-btn redeem-btn'
-                      type='primary'
-                      size='small'
+                      className="round-btn redeem-btn"
+                      type="primary"
+                      size="small"
                       inline
                       onClick={() => {
                         this.onRedeemClick(item.pubkey);
@@ -393,7 +349,7 @@ export class VoteCenter extends Component {
             });
           }}
           closable
-          title='result'
+          title="result"
           transparent
         >
           {formItems.map(item => (

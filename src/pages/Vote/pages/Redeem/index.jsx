@@ -3,13 +3,13 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:20:03
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 17:57:01
+ * @LastEditTime: 2019-12-13 15:59:33
  * @Description: file content
  */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import {
   InputItem,
   List,
@@ -18,17 +18,17 @@ import {
   Modal,
   Picker,
   ActivityIndicator
-} from 'antd-mobile';
-import { createForm } from 'rc-form';
-import moment from 'moment';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+} from "antd-mobile";
+import { createForm } from "rc-form";
+import moment from "moment";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const LABEL_NUM = 6;
 
-import './index.less';
-import ElectionContract from '@api/election';
-import { computeRedeemableVoteRecords, getFormatedLockTime } from '@utils/time';
-import { publicKeyToAddress } from '@utils/encrypt';
+import "./index.less";
+import ElectionContract from "@api/election";
+import { computeRedeemableVoteRecords, getFormatedLockTime } from "@utils/time";
+import { publicKeyToAddress } from "@utils/encrypt";
 
 function getFormItems() {
   const { copied } = this.state;
@@ -51,7 +51,7 @@ function getFormItems() {
     //   isCopyable: true
     // },
     {
-      title: 'tx id',
+      title: "tx id",
       value: (
         <CopyToClipboard
           text={txId}
@@ -59,14 +59,14 @@ function getFormItems() {
         >
           <span>
             {txId.slice(0, 10)}...
-            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
+            <i className={`iconfont ${copied ? "icon-duigou" : "icon-copy"}`} />
           </span>
         </CopyToClipboard>
       ),
       isCopyable: true
     },
     {
-      title: 'block height',
+      title: "block height",
       value: blockHeight,
       isCopyable: false
     }
@@ -86,10 +86,10 @@ export class Redeem extends Component {
       voteAmount: null,
       lockTime: null,
       txResult: {
-        amount: '-',
-        txId: '-',
-        blockHeight: '-',
-        expiredTime: '-'
+        amount: "-",
+        txId: "-",
+        blockHeight: "-",
+        expiredTime: "-"
       },
       modalVisible: false,
       redeemableVoteRecordsForOneCandidate: []
@@ -127,7 +127,7 @@ export class Redeem extends Component {
       activeVoteRecordsForOneCandidate
     );
     console.log(
-      'redeemableVoteRecordsForOneCandidate',
+      "redeemableVoteRecordsForOneCandidate",
       redeemableVoteRecordsForOneCandidate
     );
     const redeemableVotesForOne = redeemableVoteRecordsForOneCandidate.reduce(
@@ -138,7 +138,7 @@ export class Redeem extends Component {
       item.formatedLockTime = getFormatedLockTime(item);
       item.formatedVoteTime = moment
         .unix(item.voteTimestamp.seconds)
-        .format('YYYY-MM-DD HH:mm:ss');
+        .format("YYYY-MM-DD HH:mm:ss");
       // todo: use the name team submit instead
       item.name = publicKeyToAddress(item.candidate);
 
@@ -160,15 +160,18 @@ export class Redeem extends Component {
     const { getFieldProps } = this.props.form;
     this.electionContract = new ElectionContract();
 
-    const field = getFieldProps('voteToRedeem');
+    const field = getFieldProps("voteToRedeem");
     const payload = field.value[0];
-    console.log({
-      payload
-    });
-    const res = await this.electionContract.withdraw(payload);
-    console.log({
-      vote: res
-    });
+    // console.log({
+    //   payload
+    // });
+
+    try {
+      const res = await this.electionContract.withdraw(payload);
+      console.log("withdraw", res);
+    } catch (err) {
+      console.log("withdraw", err);
+    }
     this.setState({
       modalVisible: true
     });
@@ -184,10 +187,10 @@ export class Redeem extends Component {
       };
       bridge
         .api({
-          apiPath: '/api/blockChain/transactionResult', // api路径
+          apiPath: "/api/blockChain/transactionResult", // api路径
           arguments: [
             {
-              name: 'transactionResult',
+              name: "transactionResult",
               value: txId
             }
           ]
@@ -263,42 +266,42 @@ export class Redeem extends Component {
 
     return (
       <div>
-        <h1 className='page-title'>Redeem</h1>
+        <h1 className="page-title">Redeem</h1>
         {/* <List className='transfer-form'> */}
         <InputItem
-          {...getFieldProps('money3')}
+          {...getFieldProps("money3")}
           labelNumber={LABEL_NUM}
-          placeholder='input the transfer amount'
+          placeholder="input the transfer amount"
           clear
-          moneyKeyboardAlign='left'
+          moneyKeyboardAlign="left"
           value={this.pubkey}
         >
           Add
         </InputItem>
         <InputItem
-          type='number'
+          type="number"
           labelNumber={LABEL_NUM}
           value={activeVotesForOne}
           editable={false}
         >
           Total Votes
         </InputItem>
-        <p className='item-tip tip-color'>
+        <p className="item-tip tip-color">
           redeemable votes: {redeemableVotesForOne} &nbsp;&nbsp;&nbsp;
         </p>
         <Picker
           data={redeemableVoteRecordsForOneCandidate}
           cols={1}
-          {...getFieldProps('voteToRedeem')}
-          className='forss'
+          {...getFieldProps("voteToRedeem")}
+          className="forss"
         >
-          <List.Item arrow='horizontal'>Select Vote</List.Item>
+          <List.Item arrow="horizontal">Select Vote</List.Item>
         </Picker>
         {/* </List> */}
-        <div className='btn-container'>
+        <div className="btn-container">
           <Button
-            className='trading-btn'
-            type='primary'
+            className="trading-btn"
+            type="primary"
             onClick={this.onRedeemClick}
           >
             Redeem
@@ -315,7 +318,7 @@ export class Redeem extends Component {
             });
           }}
           closable
-          title='Result'
+          title="Result"
           transparent
         >
           {loading ? (
@@ -324,8 +327,8 @@ export class Redeem extends Component {
             <ul>
               {formItems.map(item => (
                 <li key={item.title}>
-                  <span className='item-label'>{item.title}: </span>
-                  <span className='item-value'>{item.value}</span>
+                  <span className="item-label">{item.title}: </span>
+                  <span className="item-value">{item.value}</span>
                 </li>
               ))}
             </ul>

@@ -3,23 +3,23 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-08 21:10:34
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-11 20:40:09
+ * @LastEditTime: 2019-12-13 16:03:20
  * @Description: file content
  */
 
-import React, { PureComponent } from 'react';
-import { withRouter } from 'react-router-dom';
-import { compose, bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Button, Toast, Modal } from 'antd-mobile';
+import React, { PureComponent } from "react";
+import { withRouter } from "react-router-dom";
+import { compose, bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { Button, Toast, Modal } from "antd-mobile";
 
-import './index.less';
-import { fetchContractAdds } from '@utils/contracts';
-import TokenContract from '@api/token';
-import { setBalance } from '@redux/actions/common';
-import { SYMBOL, TOKEN_DECIMAL } from '@constants';
+import "./index.less";
+import { fetchContractAdds } from "@utils/contracts";
+import TokenContract from "@api/token";
+import { setBalance } from "@redux/actions/common";
+import { SYMBOL, TOKEN_DECIMAL } from "@constants";
 
-const clsPrefix = 'login';
+const clsPrefix = "login";
 
 class Login extends PureComponent {
   constructor(props) {
@@ -49,8 +49,8 @@ class Login extends PureComponent {
     const res = await bridge.account();
     const { chains, accounts } = res.data;
     const { address, pubkey } = accounts[0];
-    localStorage.setItem('address', address);
-    localStorage.setItem('pubkey', pubkey);
+    localStorage.setItem("address", address);
+    localStorage.setItem("pubkey", pubkey);
     // localStorage.setItem('chains', JSON.stringify(chains));
     const chainAdds = chains.map(item => item.url);
     fetchContractAdds(chainAdds)
@@ -62,9 +62,7 @@ class Login extends PureComponent {
           owner: address
         });
 
-        console.log({
-          res
-        });
+        console.log("fetchBalance", res);
 
         setBalance(res.data.balance / TOKEN_DECIMAL);
       })
@@ -75,7 +73,7 @@ class Login extends PureComponent {
         history.push(route);
       })
       .catch(err => {
-        console.error('fetchContractAdds', err);
+        console.log("fetchContractAdds", err);
         this.setState({
           loading: false
         });
@@ -91,10 +89,10 @@ class Login extends PureComponent {
       <section
         className={`${clsPrefix}-container full-page-container center-container`}
       >
-        <h1 className='dapp-name'>AElf {appName} Demo</h1>
-        <div style={{ display: 'block', width: '80%' }}>
+        <h1 className="dapp-name">AElf {appName} Demo</h1>
+        <div style={{ display: "block", width: "80%" }}>
           <Button
-            type='primary'
+            type="primary"
             style={{ borderRadius: 20 }}
             onClick={this.login}
             loading={loading}
@@ -107,12 +105,12 @@ class Login extends PureComponent {
           transparent
           maskClosable={false}
           onClose={this.onCloseModal}
-          title='Failed'
+          title="Failed"
           footer={[
             {
-              text: 'Ok',
+              text: "Ok",
               onPress: () => {
-                console.log('ok');
+                console.log("ok");
                 this.onCloseModal();
               }
             }

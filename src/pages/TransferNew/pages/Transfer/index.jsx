@@ -3,25 +3,23 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-10-14 16:45:14
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-11-08 14:35:26
+ * @LastEditTime: 2019-12-13 16:06:46
  * @Description: file content
  */
-import React, { PureComponent } from 'react';
-import { withRouter } from 'react-router-dom';
-import {
-  List, InputItem, Button, Toast, Modal
-} from 'antd-mobile';
-import { createForm } from 'rc-form';
+import React, { PureComponent } from "react";
+import { withRouter } from "react-router-dom";
+import { List, InputItem, Button, Toast, Modal } from "antd-mobile";
+import { createForm } from "rc-form";
 
 // todo: why is the less didn't work?
-import { SYMBOL, TOKEN_DECIMAL } from '@constants';
-import './index.css';
-import TokenContract from '@api/token';
+import { SYMBOL, TOKEN_DECIMAL } from "@constants";
+import "./index.css";
+import TokenContract from "@api/token";
 
 // 通过自定义 moneyKeyboardWrapProps 修复虚拟键盘滚动穿透问题
 // https://github.com/ant-design/ant-design-mobile/issues/307
 // https://github.com/ant-design/ant-design-mobile/issues/163
-const isIPhone = new RegExp('\\biPhone\\b|\\biPod\\b', 'i').test(
+const isIPhone = new RegExp("\\biPhone\\b|\\biPod\\b", "i").test(
   window.navigator.userAgent
 );
 let moneyKeyboardWrapProps;
@@ -31,7 +29,7 @@ if (isIPhone) {
   };
 }
 
-const clsPrefix = 'transfer';
+const clsPrefix = "transfer";
 const LABEL_NUM = 6;
 
 class Transfer extends PureComponent {
@@ -61,7 +59,7 @@ class Transfer extends PureComponent {
 
     const payload = {
       to: recieverAddress,
-      symbol: 'ELF',
+      symbol: "ELF",
       amount: transferAmount * TOKEN_DECIMAL,
       memo
     };
@@ -70,7 +68,7 @@ class Transfer extends PureComponent {
     tokenContract
       .transfer(payload)
       .then(res => {
-        console.log({ res });
+        console.log("transfer", res);
 
         // todo: Is there other nice way to write the params?
         history.push(`/transfer-result/${res.data.TransactionId}`);
@@ -89,7 +87,7 @@ class Transfer extends PureComponent {
         //   // );
         //   return;
         // }
-        console.error(err);
+        console.log("transfer", err);
       });
   }
 
@@ -110,7 +108,7 @@ class Transfer extends PureComponent {
         <h3 className="title">Transfer</h3>
         <List className="transfer-form">
           <InputItem
-            {...getFieldProps('money3')}
+            {...getFieldProps("money3")}
             type="digit"
             labelNumber={LABEL_NUM}
             placeholder="input the transfer amount"
@@ -131,7 +129,7 @@ class Transfer extends PureComponent {
             placeholder="input the reciever address"
             clear
             onBlur={v => {
-              console.log('onBlur', v);
+              console.log("onBlur", v);
             }}
             value={recieverAddress}
             onChange={recieverAddress => {
@@ -161,7 +159,8 @@ class Transfer extends PureComponent {
             placeholder="input the memo"
             labelNumber={LABEL_NUM}
             ref={el => (this.inputRef = el)}
-            onVirtualKeyboardConfirm={v => console.log('onVirtualKeyboardConfirm:', v)
+            onVirtualKeyboardConfirm={v =>
+              console.log("onVirtualKeyboardConfirm:", v)
             }
             clear
             value={memo}
@@ -187,22 +186,19 @@ class Transfer extends PureComponent {
           title="Failed"
           footer={[
             {
-              text: 'Ok',
+              text: "Ok",
               onPress: () => {
-                console.log('ok');
+                console.log("ok");
                 this.onCloseModal();
               }
             }
           ]}
         >
           <p>There are some error:</p>
-          {Array.isArray(errors)
-            && errors.map(item => (
+          {Array.isArray(errors) &&
+            errors.map(item => (
               <p key={item.errorCode}>
-                {item.errorCode}
-:
-                {' '}
-                {item.errorMsg}
+                {item.errorCode}: {item.errorMsg}
               </p>
             ))}
         </Modal>
