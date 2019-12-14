@@ -3,27 +3,27 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:19:58
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-12-13 16:01:05
+ * @LastEditTime: 2019-12-14 16:32:42
  * @Description: file content
  */
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import {
   InputItem,
   List,
   Button,
   DatePicker,
   Modal,
-  ActivityIndicator
-} from "antd-mobile";
-import { createForm } from "rc-form";
-import moment from "moment";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+  ActivityIndicator,
+} from 'antd-mobile';
+import { createForm } from 'rc-form';
+import moment from 'moment';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import "./index.less";
-import ElectionContract from "@api/election";
+import './index.less';
+import ElectionContract from '@api/election';
 
 const LABEL_NUM = 6;
 
@@ -33,14 +33,14 @@ function getFormItems() {
 
   const formItems = [
     {
-      title: "amount",
+      title: 'amount',
       value: <span className="transfer-amount">{`${amount}`}</span>,
-      isCopyable: false
+      isCopyable: false,
     },
     {
-      title: "expired time",
-      value: moment(expiredTime).format("YYYY-MM-DD"),
-      isCopyable: false
+      title: 'expired time',
+      value: moment(expiredTime).format('YYYY-MM-DD'),
+      isCopyable: false,
     },
     // {
     //   title: 'node add',
@@ -48,7 +48,7 @@ function getFormItems() {
     //   isCopyable: true
     // },
     {
-      title: "tx id",
+      title: 'tx id',
       value: (
         <CopyToClipboard
           text={txId}
@@ -56,17 +56,17 @@ function getFormItems() {
         >
           <span>
             {txId.slice(0, 10)}...
-            <i className={`iconfont ${copied ? "icon-duigou" : "icon-copy"}`} />
+            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
           </span>
         </CopyToClipboard>
       ),
-      isCopyable: true
+      isCopyable: true,
     },
     {
-      title: "block height",
+      title: 'block height',
       value: blockHeight,
-      isCopyable: false
-    }
+      isCopyable: false,
+    },
   ];
 
   return formItems;
@@ -81,15 +81,15 @@ export class Vote extends Component {
       voteAmount: null,
       lockTime: null,
       txResult: {
-        amount: "-",
-        txId: "-",
-        blockHeight: "-",
-        expiredTime: "-"
+        amount: '-',
+        txId: '-',
+        blockHeight: '-',
+        expiredTime: '-',
       },
-      modalVisible: false
+      modalVisible: false,
     };
 
-    this.pubkey = props.match.params.pubkey;
+    this.publicKey = props.match.params.publicKey;
 
     this.onVoteClick = this.onVoteClick.bind(this);
   }
@@ -98,32 +98,31 @@ export class Vote extends Component {
     const { voteAmount } = this.state;
     let { lockTime } = this.state;
     console.log({
-      voteAmount
+      voteAmount,
     });
 
     this.electionContract = new ElectionContract();
 
     lockTime = moment(lockTime);
     const payload = {
-      candidatePubkey: this.pubkey,
+      candidatePubkey: this.publicKey,
       amount: voteAmount,
       endTimestamp: {
         seconds: lockTime.unix(),
-        nanos: lockTime.milliseconds() * 1000
-      }
+        nanos: lockTime.milliseconds() * 1000,
+      },
     };
 
     try {
       const res = await this.electionContract.vote(payload);
-      console.log("vote", res);
+      this.setState({
+        modalVisible: true,
+      });
+      this.fetchTxResult(res.data.TransactionId);
+      console.log('vote', res);
     } catch (err) {
-      console.log("vote", err);
+      console.log('vote', err);
     }
-
-    this.setState({
-      modalVisible: true
-    });
-    this.fetchTxResult(res.data.TransactionId);
   }
 
   fetchTxResult(txId) {
@@ -131,30 +130,30 @@ export class Vote extends Component {
 
     setTimeout(() => {
       const payload = {
-        txId
+        txId,
       };
       bridge
         .api({
-          apiPath: "/api/blockChain/transactionResult", // api路径
+          apiPath: '/api/blockChain/transactionResult', // api路径
           arguments: [
             {
-              name: "transactionResult",
-              value: txId
-            }
-          ]
+              name: 'transactionResult',
+              value: txId,
+            },
+          ],
         })
         .then(res => {
           this.setState({
-            loading: false
+            loading: false,
           });
           console.log({
-            res
+            res,
           });
           if (res.code !== 0) {
             this.setState({
               errors: res.error,
               isModalShow: true,
-              loading: false
+              loading: false,
             });
             // todo: find a toast that can should multi-line
             // Toast.fail(
@@ -166,7 +165,7 @@ export class Vote extends Component {
           }
 
           console.log({
-            res
+            res,
           });
 
           const { Status: status, TransactionId } = res.data;
@@ -182,18 +181,18 @@ export class Vote extends Component {
               blockHeight,
               status,
               nodeAdd: candidatePubkey,
-              expiredTime: endTimestamp
-            }
+              expiredTime: endTimestamp,
+            },
           });
 
           console.log("I'm success");
         })
         .catch(err => {
           this.setState({
-            loading: false
+            loading: false,
           });
           console.log({
-            err
+            err,
           });
         });
     }, 4000);
@@ -210,12 +209,12 @@ export class Vote extends Component {
         <h1 className="page-title">Vote</h1>
         {/* <List className='transfer-form'> */}
         <InputItem
-          {...getFieldProps("money3")}
+          {...getFieldProps('money3')}
           labelNumber={LABEL_NUM}
           placeholder="input the transfer amount"
           clear
           moneyKeyboardAlign="left"
-          value={this.pubkey}
+          value={this.publicKey}
           editable={false}
         >
           Add
@@ -226,7 +225,7 @@ export class Vote extends Component {
           placeholder="input the amount"
           clear
           onBlur={v => {
-            console.log("onBlur", v);
+            console.log('onBlur', v);
           }}
           value={voteAmount}
           onChange={voteAmount => this.setState({ voteAmount })}
@@ -263,7 +262,7 @@ export class Vote extends Component {
             this.setState({
               modalVisible: false,
               copied: false,
-              loading: true
+              loading: true,
             });
           }}
           closable

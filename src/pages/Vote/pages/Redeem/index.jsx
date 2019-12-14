@@ -3,13 +3,13 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-09 18:20:03
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-12-13 15:59:33
+ * @LastEditTime: 2019-12-14 16:33:13
  * @Description: file content
  */
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import {
   InputItem,
   List,
@@ -17,18 +17,18 @@ import {
   DatePicker,
   Modal,
   Picker,
-  ActivityIndicator
-} from "antd-mobile";
-import { createForm } from "rc-form";
-import moment from "moment";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+  ActivityIndicator,
+} from 'antd-mobile';
+import { createForm } from 'rc-form';
+import moment from 'moment';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const LABEL_NUM = 6;
 
-import "./index.less";
-import ElectionContract from "@api/election";
-import { computeRedeemableVoteRecords, getFormatedLockTime } from "@utils/time";
-import { publicKeyToAddress } from "@utils/encrypt";
+import './index.less';
+import ElectionContract from '@api/election';
+import { computeRedeemableVoteRecords, getFormatedLockTime } from '@utils/time';
+import { publicKeyToAddress } from '@utils/encrypt';
 
 function getFormItems() {
   const { copied } = this.state;
@@ -51,7 +51,7 @@ function getFormItems() {
     //   isCopyable: true
     // },
     {
-      title: "tx id",
+      title: 'tx id',
       value: (
         <CopyToClipboard
           text={txId}
@@ -59,17 +59,17 @@ function getFormItems() {
         >
           <span>
             {txId.slice(0, 10)}...
-            <i className={`iconfont ${copied ? "icon-duigou" : "icon-copy"}`} />
+            <i className={`iconfont ${copied ? 'icon-duigou' : 'icon-copy'}`} />
           </span>
         </CopyToClipboard>
       ),
-      isCopyable: true
+      isCopyable: true,
     },
     {
-      title: "block height",
+      title: 'block height',
       value: blockHeight,
-      isCopyable: false
-    }
+      isCopyable: false,
+    },
   ];
 
   return formItems;
@@ -86,16 +86,16 @@ export class Redeem extends Component {
       voteAmount: null,
       lockTime: null,
       txResult: {
-        amount: "-",
-        txId: "-",
-        blockHeight: "-",
-        expiredTime: "-"
+        amount: '-',
+        txId: '-',
+        blockHeight: '-',
+        expiredTime: '-',
       },
       modalVisible: false,
-      redeemableVoteRecordsForOneCandidate: []
+      redeemableVoteRecordsForOneCandidate: [],
     };
 
-    this.pubkey = props.match.params.pubkey;
+    this.publicKey = props.match.params.publicKey;
 
     this.onRedeemClick = this.onRedeemClick.bind(this);
   }
@@ -117,7 +117,7 @@ export class Redeem extends Component {
     const { userVotes } = this.props;
 
     const activeVoteRecordsForOneCandidate = userVotes.activeVotingRecords.filter(
-      item => item.candidate === this.pubkey
+      item => item.candidate === this.publicKey
     );
     const activeVotesForOne = activeVoteRecordsForOneCandidate.reduce(
       (total, item) => total + +item.amount,
@@ -127,7 +127,7 @@ export class Redeem extends Component {
       activeVoteRecordsForOneCandidate
     );
     console.log(
-      "redeemableVoteRecordsForOneCandidate",
+      'redeemableVoteRecordsForOneCandidate',
       redeemableVoteRecordsForOneCandidate
     );
     const redeemableVotesForOne = redeemableVoteRecordsForOneCandidate.reduce(
@@ -138,7 +138,7 @@ export class Redeem extends Component {
       item.formatedLockTime = getFormatedLockTime(item);
       item.formatedVoteTime = moment
         .unix(item.voteTimestamp.seconds)
-        .format("YYYY-MM-DD HH:mm:ss");
+        .format('YYYY-MM-DD HH:mm:ss');
       // todo: use the name team submit instead
       item.name = publicKeyToAddress(item.candidate);
 
@@ -152,7 +152,7 @@ export class Redeem extends Component {
       activeVoteRecordsForOneCandidate,
       redeemableVoteRecordsForOneCandidate,
       activeVotesForOne,
-      redeemableVotesForOne
+      redeemableVotesForOne,
     });
   }
 
@@ -160,7 +160,7 @@ export class Redeem extends Component {
     const { getFieldProps } = this.props.form;
     this.electionContract = new ElectionContract();
 
-    const field = getFieldProps("voteToRedeem");
+    const field = getFieldProps('voteToRedeem');
     const payload = field.value[0];
     // console.log({
     //   payload
@@ -168,14 +168,14 @@ export class Redeem extends Component {
 
     try {
       const res = await this.electionContract.withdraw(payload);
-      console.log("withdraw", res);
+      this.setState({
+        modalVisible: true,
+      });
+      this.fetchTxResult(res.data.TransactionId);
+      console.log('withdraw', res);
     } catch (err) {
-      console.log("withdraw", err);
+      console.log('withdraw', err);
     }
-    this.setState({
-      modalVisible: true
-    });
-    this.fetchTxResult(res.data.TransactionId);
   }
 
   fetchTxResult(txId) {
@@ -183,30 +183,30 @@ export class Redeem extends Component {
 
     setTimeout(() => {
       const payload = {
-        txId
+        txId,
       };
       bridge
         .api({
-          apiPath: "/api/blockChain/transactionResult", // api路径
+          apiPath: '/api/blockChain/transactionResult', // api路径
           arguments: [
             {
-              name: "transactionResult",
-              value: txId
-            }
-          ]
+              name: 'transactionResult',
+              value: txId,
+            },
+          ],
         })
         .then(res => {
           this.setState({
-            loading: false
+            loading: false,
           });
           console.log({
-            res
+            res,
           });
           if (res.code !== 0) {
             this.setState({
               errors: res.error,
               isModalShow: true,
-              loading: false
+              loading: false,
             });
             // todo: find a toast that can should multi-line
             // Toast.fail(
@@ -218,7 +218,7 @@ export class Redeem extends Component {
           }
 
           console.log({
-            res
+            res,
           });
 
           const { Status: status, TransactionId } = res.data;
@@ -233,18 +233,18 @@ export class Redeem extends Component {
               blockHeight,
               status,
               nodeAdd: candidatePubkey,
-              expiredTime: endTimestamp
-            }
+              expiredTime: endTimestamp,
+            },
           });
 
           console.log("I'm success");
         })
         .catch(err => {
           this.setState({
-            loading: false
+            loading: false,
           });
           console.log({
-            err
+            err,
           });
         });
     }, 4000);
@@ -259,7 +259,7 @@ export class Redeem extends Component {
       redeemableVoteRecordsForOneCandidate,
       activeVotesForOne,
       redeemableVotesForOne,
-      loading
+      loading,
     } = this.state;
 
     const formItems = getFormItems.call(this);
@@ -269,12 +269,12 @@ export class Redeem extends Component {
         <h1 className="page-title">Redeem</h1>
         {/* <List className='transfer-form'> */}
         <InputItem
-          {...getFieldProps("money3")}
+          {...getFieldProps('money3')}
           labelNumber={LABEL_NUM}
           placeholder="input the transfer amount"
           clear
           moneyKeyboardAlign="left"
-          value={this.pubkey}
+          value={this.publicKey}
         >
           Add
         </InputItem>
@@ -292,7 +292,7 @@ export class Redeem extends Component {
         <Picker
           data={redeemableVoteRecordsForOneCandidate}
           cols={1}
-          {...getFieldProps("voteToRedeem")}
+          {...getFieldProps('voteToRedeem')}
           className="forss"
         >
           <List.Item arrow="horizontal">Select Vote</List.Item>
@@ -314,7 +314,7 @@ export class Redeem extends Component {
             this.setState({
               modalVisible: false,
               loading: true,
-              copied: false
+              copied: false,
             });
           }}
           closable

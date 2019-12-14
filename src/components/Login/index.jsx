@@ -3,7 +3,7 @@
  * @Github: https://github.com/cat-walk
  * @Date: 2019-11-08 21:10:34
  * @LastEditors: Alfred Yang
- * @LastEditTime: 2019-12-13 16:03:20
+ * @LastEditTime: 2019-12-14 16:22:28
  * @Description: file content
  */
 
@@ -48,9 +48,12 @@ class Login extends PureComponent {
     });
     const res = await bridge.account();
     const { chains, accounts } = res.data;
-    const { address, pubkey } = accounts[0];
+    const { address, publicKey } = accounts[0];
+    console.log({
+      publicKey
+    })
     localStorage.setItem("address", address);
-    localStorage.setItem("pubkey", pubkey);
+    localStorage.setItem("publicKey", publicKey);
     // localStorage.setItem('chains', JSON.stringify(chains));
     const chainAdds = chains.map(item => item.url);
     fetchContractAdds(chainAdds)

@@ -24,8 +24,8 @@ export default (
     <Redirect from='/' to='/login' exact />
 
     <Route path='/vote-center' component={VoteCenter} />
-    <Route path='/vote/:pubkey' component={Vote} />
-    <Route path='/redeem/:pubkey' component={Redeem} />
+    <Route path='/vote/:publicKey' component={Vote} />
+    <Route path='/redeem/:publicKey' component={Redeem} />
     {/* <Route path='*' component={NoMatch} /> */}
   </Switch>
 );

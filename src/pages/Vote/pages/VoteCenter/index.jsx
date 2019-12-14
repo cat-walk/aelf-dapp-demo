@@ -93,7 +93,7 @@ export class VoteCenter extends Component {
     this.onRedeemClick = this.onRedeemClick.bind(this);
 
     this.address = localStorage.getItem("address");
-    this.pubkey = localStorage.getItem("pubkey");
+    this.publicKey = localStorage.getItem("publicKey");
   }
 
   async componentDidMount() {
@@ -122,7 +122,7 @@ export class VoteCenter extends Component {
 
     try {
       const res = await this.electionContract.getElectorVoteWithAllRecords({
-        value: this.pubkey
+        value: this.publicKey
       });
 
       console.log({
